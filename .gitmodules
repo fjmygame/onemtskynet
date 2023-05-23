@@ -1,0 +1,6 @@
+[submodule "skynet"]
+	path = skynet
+	url = https://github.com/huasonl/skynet.git
+[submodule "onemtsdk"]
+	path = onemtsdk
+	url = http://gitlab.onemt.co/onemt-server-sdk/onemtsdk.git
