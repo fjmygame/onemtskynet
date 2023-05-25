@@ -25,7 +25,7 @@ lua_cpath = "./skynet/luaclib/?.so;" .. "game/lib/?.so;" .. "./?.so"
 luaservice = "./skynet/service/?.lua;" .. proj_luaservices
 lualoader = "./game/liblua/lualoader.lua"
 
--- logpath = "/data/kow_log"
+--logpath = "../kow_log/lhs"
 
 -- cluster = "./game/conf/clusterconf.lua"
 
