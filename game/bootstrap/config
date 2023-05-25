@@ -1,0 +1,35 @@
+-- 项目使用luaservice定义
+proj_luaservices =
+    "game/service/?.lua;" ..
+    "game/bootstrap/?.lua;" ..
+     ""
+-- End
+
+-- 项目使用lua_path定义
+proj_luapaths = "game/?.lua;" ..
+    "game/liblua/?.lua;" ..
+    "game/constdef/?.lua;" ..
+    "game/sharedef/?.lua;"..
+    "./?.lua;"
+-- End
+
+--启动配置
+thread = 16
+harbor = 0
+logservice = "hlogger"
+bootstrap = "snlua bootstrap"
+
+cpath = "./skynet/cservice/?.so;./game/lib/?.so"
+lua_path = "./skynet/lualib/?.lua;" .. "./skynet/lualib/compat10/?.lua;" .. proj_luapaths
+lua_cpath = "./skynet/luaclib/?.so;" .. "game/lib/?.so;" .. "./?.so"
+luaservice = "./skynet/service/?.lua;" .. proj_luaservices
+lualoader = "./game/liblua/lualoader.lua"
+
+-- logpath = "/data/kow_log"
+
+-- cluster = "./game/conf/clusterconf.lua"
+
+start = "start_server"
+preload = "./game/bootstrap/preload.lua"
+
+-- daemon = "./skynet.pid"

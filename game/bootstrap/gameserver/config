@@ -1,0 +1,5 @@
+include "../config"
+
+servertype = "gameserver"
+
+preload = "./game/bootstrap/gameserver/preload.lua"

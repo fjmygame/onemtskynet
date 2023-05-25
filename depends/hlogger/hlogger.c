@@ -324,7 +324,7 @@ hlogger_read_config(HappyLogger * inst) {
             if (pn) {
                 *pn = '\0';
             }
-            printf("hlogger_init from config dir:%s\n", inst->dir);
+            printf("hlogger_read_config from config dir:%s\n", inst->dir);
             return 0;
         }
     }

@@ -1,0 +1,41 @@
+cmd_pre = "helloo"
+
+eConnCmd = {
+    eConnect_req = 1,       -- 发起连接
+    eConnect_ret = 2,       -- 连接返回
+    eDisconnect = 3,    -- 断开
+    eData = 4,        -- 消息包
+    eReconnect_req = 5, -- 重连请求
+    eReconnect_ret = 6, -- 重连返回
+}
+
+eDisconnectType = {
+    normal = 0, -- 默认值
+    timeout = 1, -- 超时
+    unfoundcon = 2, -- 连接找不到
+    fromchange = 3, -- ip/port不匹配
+    linkmax = 4, -- 连接数达到上限
+    errkey = 5, -- 错误的秘钥
+}
+
+前后端通信包分为2类：
+    1.逻辑包(建立连接，断开推送)
+        格式统一为 packagesize(包长度,2字节) .. cmd(逻辑类型,2字节) .. flowid(流水id，客户端每次请求+1, 2字节) .. param(后续参数，有则加)
+    2.数据包(直接放入kcp中)
+
+1.连接建立
+    client -> server
+        packagesize .. cmd(eConnect_req) .. flowid
+    server -> client
+        成功返回
+            packagesize .. cmd(eConnect_ret) .. flowid .. conv(kcpid，4字节) .. conkey(登录秘钥, 4字节)
+        异常返回
+            packagesize .. cmd(eDisconnect) .. flowid .. conv(kcpid，4字节) .. distype(断开原因, 4字节)
+
+2.重连
+    client -> server
+        packagesize .. cmd(eReconnect_req) .. flowid .. conv(kcpid，4字节) .. conkey(登录秘钥, 4字节)
+        成功返回
+            packagesize .. cmd(eReconnect_ret) .. flowid .. conv(kcpid，4字节) .. conkey(登录秘钥, 4字节)
+        异常返回
+            packagesize .. cmd(eDisconnect) .. flowid .. conv(kcpid，4字节) .. distype(断开原因, 4字节)
