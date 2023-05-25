@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 void 
-send_logger(struct skynet_context * context, int type, const char *msg) {
+send_logger(struct skynet_context * context, int type, const char *msg, size_t len) {
 	static uint32_t logger = 0;
 	if (logger == 0) {
 		logger = skynet_handle_findname("logger");
@@ -28,14 +28,9 @@ send_logger(struct skynet_context * context, int type, const char *msg) {
 	if (logger == 0) {
 		return;
 	}
-
-	size_t len = strlen(msg);
-	if (len == 0) {
-		printf("send_logger error logger blank message\n");
-		return;
-	}
-
-	char *data = skynet_strdup(msg);
+	
+	char * data = skynet_malloc(len);
+	memcpy(data, msg, len);
 
 	struct skynet_message smsg;
 	if (context == NULL) {
@@ -72,20 +67,22 @@ ljoinargs(lua_State *L) {
 int
 lerror(lua_State *L) {
 	ljoinargs(L);
-	const char* msg = lua_tostring(L, -1);
+	size_t len;
+	const char* msg = lua_tolstring(L, -1, &len);
 	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
 	struct skynet_context *context = lua_touserdata(L,-1);
-	send_logger(context, PTYPE_LOG_ERROR, msg);
+	send_logger(context, PTYPE_LOG_ERROR, msg, len);
 	return 0;
 }
 
 int
 lwarn(lua_State *L) {
 	ljoinargs(L);
-	const char* msg = lua_tostring(L, -1);
+	size_t len;
+	const char* msg = lua_tolstring(L, -1, &len);
 	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
 	struct skynet_context *context = lua_touserdata(L,-1);
-	send_logger(context, PTYPE_LOG_WARN, msg);
+	send_logger(context, PTYPE_LOG_WARN, msg, len);
 	return 0;
 }
 
