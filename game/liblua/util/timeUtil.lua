@@ -8,16 +8,12 @@
     时间相关接口
 ]]
 local skynet = require("skynet")
-local sharedata = require "sharedataLib"
+
 ---@class timeUtil
 local timeUtil = BuildUtil("timeUtil")
 
-local systime
 local function getStarttime()
-    if not systime then
-        systime = sharedata.query("systime")
-    end
-    return systime and systime.starttime
+    return skynet.starttime()
 end
 
 -- 获取系统时间
@@ -701,16 +697,6 @@ function timeUtil.checkDate(year, month, day)
     end
 
     return true
-end
-
--- --------------------- 一个服务只能有一个(不推荐) ---------------------
-
--- 客户端时间是否初始化过
-function timeUtil.clientIsInit()
-    if not systime then
-        systime = sharedata.query("systime")
-    end
-    return systime and systime._clientIsInit or false
 end
 
 return timeUtil

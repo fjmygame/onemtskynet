@@ -8,8 +8,6 @@ local sharedataLib = {}
 
 --增加引用计数
 function sharedataLib.query(name)
-	--Log.i("query name=", name)
-	--Log.e("sharedataLib.query")
 	if not queryRecord[name] then
 		queryCount = queryCount + 1
 	end

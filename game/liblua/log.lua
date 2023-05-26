@@ -21,36 +21,24 @@ log.openModule = {
     player = true
 }
 
--- debug模式才需要的日志
--- if dbconf.DEBUG then
---     log.openModule.offlineInfo = true
---     log.openModule.database = true
--- end
-
 -- 保留名字data,模块不要用
 log.openModule.data = nil
 
 -- log等级
-local LEVEL_ERROR = 0
-local LEVEL_WARNING = 1
-local LEVEL_INFO = 2
-local LEVEL_DEBUG = 4
+local LEVEL_DEBUG = 0
+local LEVEL_INFO = 1
+local LEVEL_WARNING = 2
+local LEVEL_ERROR = 3
 
 log.level = LEVEL_DEBUG
 
--- -- 设置log等级[后面可以改成配置]
--- if dbconf.logLevel == nil then
---     log.level = LEVEL_DEBUG
--- else
+-- 设置log等级[后面可以改成配置]
+-- if dbconf.logLevel then
 --     log.level = dbconf.logLevel
 -- end
 
 local function logPrefix(lv, moduleName, other)
-    local str = "n(" .. dbconf.curnodeid .. ")"
-    -- 加玩家ID前缀
-    if "number" == type(gUid) then
-        str = str .. " uid(" .. gUid .. ")"
-    end
+    local str = ""
     if moduleName then
         str = str .. " m(" .. moduleName .. ")"
     end
@@ -65,8 +53,9 @@ local function logPrefix(lv, moduleName, other)
         timeStr = os.date("%Y-%m-%d %H:%M:%S")
     end
 
-    if skynet.tracetag() then
-        return string.safeFormat(" <TRACE %s> %s [%s] %s: ", skynet.tracetag(), timeStr, lv, str)
+    local tag = skynet.tracetag()
+    if tag then
+        return string.safeFormat(" <TRACE %s> %s [%s] %s: ", tag, timeStr, lv, str)
     else
         return string.safeFormat(" %s [%s] %s: ", timeStr, lv, str)
     end
@@ -100,27 +89,20 @@ end
 
 -- 杀进程级别的报错
 function log.Fatal(moduleName, ...)
-    local pre = logPrefix("E", moduleName, getLogFileLine())
-    -- skynet.error(pre, ...)
-    sendToLogSvr("error", moduleName, gUid, math.floor(skynet.time()), pre, ...)
+    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
     hloggerlib.error(pre, ...)
     skynet.sleep(50)
     skynet.abort()
 end
 
--- log 扩展
--- moduleName 保留保证接口一致
 function log.Error(moduleName, ...)
-    local pre = logPrefix("E", moduleName, getLogFileLine())
-    -- skynet.error(pre, ...)
-    sendToLogSvr("error", moduleName, gUid, math.floor(skynet.time()), pre, ...)
+    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
     hloggerlib.error(pre, ...)
 end
 
 function log.ErrorFormat(moduleName, fmt, ...)
     local logStr = string.safeFormat(fmt, ...)
-    local pre = logPrefix("E", moduleName, getLogFileLine())
-    sendToLogSvr("error", moduleName, gUid, math.floor(skynet.time()), pre, logStr)
+    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
     hloggerlib.error(pre, logStr)
 end
 
@@ -138,136 +120,87 @@ function log.limitError(moduleName, str, ...)
     log.Error(moduleName, str, ...)
 end
 
--- Debug环境报错提示
-function log.debugErrorStack(moduleName, ...)
-    if not dbconf.DEBUG then
-        return
-    end
-    local pre = logPrefix("E", moduleName)
-    -- skynet.error(pre, ...)
-    sendToLogSvr("error", moduleName, gUid, math.floor(skynet.time()), pre, debug.traceback(), ...)
-    hloggerlib.error(pre, debug.traceback(), ...)
-end
-
 function log.ErrorStack(moduleName, ...)
-    local pre = logPrefix("E", moduleName)
-    -- skynet.error(pre, ...)
-    sendToLogSvr("error", moduleName, gUid, math.floor(skynet.time()), pre, debug.traceback(), ...)
+    local pre = logPrefix("ERROR", moduleName)
     hloggerlib.error(pre, debug.traceback(), ...)
 end
 
 function log.Warn(moduleName, ...)
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
+    if log.level > LEVEL_WARNING or not log.openModule[moduleName] then
         return
     end
 
-    if log.level >= LEVEL_WARNING then
-        local pre = logPrefix("W", moduleName)
-        -- skynet.error(pre, ...)
-        -- sendToLogSvr("warn", pre, ...)
-        hloggerlib.warn(pre, ...)
-    end
+    local pre = logPrefix("WARN", moduleName, getLogFileLine())
+    hloggerlib.warn(pre, ...)
 end
 
 function log.WarnFormat(moduleName, fmt, ...)
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
+    if log.level > LEVEL_WARNING or not log.openModule[moduleName] then
         return
     end
 
-    if log.level >= LEVEL_WARNING then
-        local pre = logPrefix("W", moduleName)
-        local logStr = string.safeFormat(fmt, ...)
-        hloggerlib.warn(pre, logStr)
-    end
+    local pre = logPrefix("WARN", moduleName, getLogFileLine())
+    local logStr = string.safeFormat(fmt, ...)
+    hloggerlib.warn(pre, logStr)
 end
 
 function log.Info(moduleName, ...)
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
+    if log.level > LEVEL_INFO or not log.openModule[moduleName] then
         return
     end
 
-    if log.level >= LEVEL_INFO then
-        skynet.error(logPrefix("I", moduleName), ...)
-    end
+    hloggerlib.info(logPrefix("INFO", moduleName, getLogFileLine()), ...)
 end
 
 function log.InfoFormat(moduleName, fmt, ...)
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
+    if log.level > LEVEL_INFO or not log.openModule[moduleName] then
         return
     end
 
-    if log.level >= LEVEL_INFO then
-        local logStr = string.safeFormat(fmt, ...)
-        skynet.error(logPrefix("I", moduleName), logStr)
-    end
+    local logStr = string.safeFormat(fmt, ...)
+    hloggerlib.info(logPrefix("INFO", moduleName, getLogFileLine()), logStr)
 end
 
 function log.Debug(moduleName, ...)
-    if not dbconf.DEBUG then
+    if log.level > LEVEL_DEBUG or not log.openModule[moduleName] then
         return
     end
 
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
-        return
-    end
-
-    if log.level >= LEVEL_DEBUG then
-        skynet.error(logPrefix("D", moduleName), ...)
-    end
+    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), ...)
 end
 
 function log.DebugFormat(moduleName, fmt, ...)
-    if not dbconf.DEBUG then
+    if log.level > LEVEL_DEBUG or not log.openModule[moduleName] then
         return
     end
 
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
-        return
-    end
-
-    if log.level >= LEVEL_DEBUG then
-        local logStr = string.safeFormat(fmt, ...)
-        skynet.error(logPrefix("D", moduleName), logStr)
-    end
+    local logStr = string.safeFormat(fmt, ...)
+    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), logStr)
 end
 
--- dump 只有debug模式下可以使用
 function log.Dump(moduleName, value, desciption, nesting, ...)
-    if not dbconf.DEBUG then
+    if log.level > LEVEL_DEBUG or not log.openModule[moduleName] then
         return
     end
 
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
-        return
-    end
-
-    if log.level >= LEVEL_DEBUG then
-        skynet.error(dumpTable(value, desciption, nesting), ...)
-    end
-end
-
--- dumpError 错误时候用 lv级别error moduleName 保留保证接口一致
-function log.ErrorDump(moduleName, value, desciption, nesting, ...)
-    skynet.error(dumpTable(value, desciption, nesting), ...)
+    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), dumpTable(value, desciption, nesting), ...)
 end
 
 -- 打印堆栈
 function log.PrintTrace(moduleName, ...)
-    if log.level > LEVEL_ERROR and not log.openModule[moduleName] then
+    if log.level > LEVEL_DEBUG or not log.openModule[moduleName] then
         return
     end
 
-    if log.level >= LEVEL_DEBUG then
-        skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. "----------------------------------------------")
-        skynet.error("name:" .. moduleName .. " " .. logPrefix("DT"), ...)
-        skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. debug.traceback("", 2))
-        skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. "----------------------------------------------")
-    end
+    skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. "----------------------------------------------")
+    skynet.error("name:" .. moduleName .. " " .. logPrefix("DT"), ...)
+    skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. debug.traceback("", 2))
+    skynet.error("name:" .. moduleName .. " " .. logPrefix("D") .. "----------------------------------------------")
 end
 
 function log.SetLevel(lv)
-    if lv > LEVEL_DEBUG then
-        log.Warn("log set level err lv > debug!!")
+    if lv < LEVEL_DEBUG or lv > LEVEL_ERROR then
+        log.WarnFormat("sys", "log set level err lv %s", lv)
         return
     end
     log.level = lv

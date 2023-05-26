@@ -8,8 +8,6 @@
 
 local skynet = require("skynet")
 local zset = require("zset")
----@type timeUtil
-local timeUtil = require("timeUtil")
 
 ---@class delayTimerMilLit
 local _M = BuildOther("delayTimerMilLit")

@@ -20,9 +20,10 @@ local start_cfg = {
 skynet.start(
     function()
         -- 启动日志服务
-        skynet.newservice("serverLogService")
+        -- skynet.newservice("serverLogService")
         -- 初始化sharetable，需要放最前面
         sharedefinit.load()
+        timeUtil = require "util.timeUtil"
 
         --启动debug服务
         -- skynet.newservice("debug_console", clusterCfg.debug_port)

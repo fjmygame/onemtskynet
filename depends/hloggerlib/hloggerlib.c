@@ -86,14 +86,38 @@ lwarn(lua_State *L) {
 	return 0;
 }
 
+int
+linfo(lua_State *L) {
+	ljoinargs(L);
+	size_t len;
+	const char* msg = lua_tolstring(L, -1, &len);
+	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
+	struct skynet_context *context = lua_touserdata(L,-1);
+	send_logger(context, PTYPE_LOG_INFO, msg, len);
+	return 0;
+}
+
+int
+ldebug(lua_State *L) {
+	ljoinargs(L);
+	size_t len;
+	const char* msg = lua_tolstring(L, -1, &len);
+	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
+	struct skynet_context *context = lua_touserdata(L,-1);
+	send_logger(context, PTYPE_LOG_DEBUG, msg, len);
+	return 0;
+}
+
 LUAMOD_API int
 luaopen_hloggerlib(lua_State *L) {
 	luaL_checkversion(L);
 
 	luaL_Reg l[] = {
-		{ "joinargs", ljoinargs },
-		{ "error", lerror },
-		{ "warn", lwarn },
+		{"joinargs", ljoinargs },
+		{"error", lerror },
+		{"warn", lwarn },
+		{"info", linfo},
+		{"debug", ldebug},
 		{ NULL, NULL },
 	};
     luaL_newlib(L,l);
