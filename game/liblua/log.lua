@@ -7,6 +7,9 @@
 -- --------------------------------------
 local skynet = require("skynet")
 local hloggerlib = require("hloggerlib")
+
+local tconcat = table.concat
+
 ---@class log
 local log = {}
 
@@ -40,7 +43,7 @@ log.level = LEVEL_DEBUG
 local function logPrefix(lv, moduleName, other)
     local str = ""
     if moduleName then
-        str = str .. " m(" .. moduleName .. ")"
+        str = str .. "m(" .. moduleName .. ")"
     end
     if other then
         str = str .. other
@@ -55,9 +58,9 @@ local function logPrefix(lv, moduleName, other)
 
     local tag = skynet.tracetag()
     if tag then
-        return string.safeFormat(" <TRACE %s> %s [%s] %s: ", tag, timeStr, lv, str)
+        return string.safeFormat("<TRACE %s> %s [%s] %s:", tag, timeStr, lv, str)
     else
-        return string.safeFormat(" %s [%s] %s: ", timeStr, lv, str)
+        return string.safeFormat("%s [%s] %s:", timeStr, lv, str)
     end
 end
 
@@ -89,35 +92,21 @@ end
 
 -- 杀进程级别的报错
 function log.Fatal(moduleName, ...)
-    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
-    hloggerlib.error(pre, ...)
+    local pre = logPrefix("ERROR", moduleName)
+    hloggerlib.error(pre, tconcat({...}), getLogFileLine())
     skynet.sleep(50)
     skynet.abort()
 end
 
 function log.Error(moduleName, ...)
-    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
-    hloggerlib.error(pre, ...)
+    local pre = logPrefix("ERROR", moduleName)
+    hloggerlib.error(pre, tconcat({...}), getLogFileLine())
 end
 
 function log.ErrorFormat(moduleName, fmt, ...)
     local logStr = string.safeFormat(fmt, ...)
-    local pre = logPrefix("ERROR", moduleName, getLogFileLine())
-    hloggerlib.error(pre, logStr)
-end
-
--- 限时Error接口：即同一信息在多长时间内不重复报
-local limitErrTimeMap = CreateBlankTable(log, "limitErrTimeMap")
-function log.limitError(moduleName, str, ...)
-    local curTime = skynet.time()
-    local lastTime = limitErrTimeMap[str]
-    -- 默认5分钟不重复报error，转成报info
-    if lastTime and curTime - lastTime < 300 then
-        log.Info(moduleName, str, ...)
-        return
-    end
-    limitErrTimeMap[str] = curTime
-    log.Error(moduleName, str, ...)
+    local pre = logPrefix("ERROR", moduleName)
+    hloggerlib.error(pre, logStr, getLogFileLine())
 end
 
 function log.ErrorStack(moduleName, ...)
@@ -130,8 +119,8 @@ function log.Warn(moduleName, ...)
         return
     end
 
-    local pre = logPrefix("WARN", moduleName, getLogFileLine())
-    hloggerlib.warn(pre, ...)
+    local pre = logPrefix("WARN", moduleName)
+    hloggerlib.warn(pre, tconcat({...}), getLogFileLine())
 end
 
 function log.WarnFormat(moduleName, fmt, ...)
@@ -139,9 +128,9 @@ function log.WarnFormat(moduleName, fmt, ...)
         return
     end
 
-    local pre = logPrefix("WARN", moduleName, getLogFileLine())
+    local pre = logPrefix("WARN", moduleName)
     local logStr = string.safeFormat(fmt, ...)
-    hloggerlib.warn(pre, logStr)
+    hloggerlib.warn(pre, logStr, getLogFileLine())
 end
 
 function log.Info(moduleName, ...)
@@ -149,7 +138,7 @@ function log.Info(moduleName, ...)
         return
     end
 
-    hloggerlib.info(logPrefix("INFO", moduleName, getLogFileLine()), ...)
+    hloggerlib.info(logPrefix("INFO", moduleName), tconcat({...}), getLogFileLine())
 end
 
 function log.InfoFormat(moduleName, fmt, ...)
@@ -158,7 +147,7 @@ function log.InfoFormat(moduleName, fmt, ...)
     end
 
     local logStr = string.safeFormat(fmt, ...)
-    hloggerlib.info(logPrefix("INFO", moduleName, getLogFileLine()), logStr)
+    hloggerlib.info(logPrefix("INFO", moduleName), logStr, getLogFileLine())
 end
 
 function log.Debug(moduleName, ...)
@@ -166,7 +155,7 @@ function log.Debug(moduleName, ...)
         return
     end
 
-    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), ...)
+    skynet.error(logPrefix("DEBUG", moduleName), tconcat({...}), getLogFileLine())
 end
 
 function log.DebugFormat(moduleName, fmt, ...)
@@ -175,7 +164,7 @@ function log.DebugFormat(moduleName, fmt, ...)
     end
 
     local logStr = string.safeFormat(fmt, ...)
-    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), logStr)
+    skynet.error(logPrefix("DEBUG", moduleName), logStr, getLogFileLine())
 end
 
 function log.Dump(moduleName, value, desciption, nesting, ...)
@@ -183,7 +172,7 @@ function log.Dump(moduleName, value, desciption, nesting, ...)
         return
     end
 
-    skynet.error(logPrefix("DEBUG", moduleName, getLogFileLine()), dumpTable(value, desciption, nesting), ...)
+    skynet.error(logPrefix("DEBUG", moduleName), dumpTable(value, desciption, nesting), tconcat({...}), getLogFileLine())
 end
 
 -- 打印堆栈
