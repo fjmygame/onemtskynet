@@ -39,6 +39,11 @@
 static const char * logger_names[] = {"error", "warn", "info", "debug", NULL};
 typedef enum {ERROR = 0,WARN,INFO,LoggerLevelNull} LoggerLevel;
 
+static char *knrm = "\x1B[0m";
+static char *kred = "\x1B[31m";
+static char *kgreen = "\x1B[32m";
+static char *kyellow = "\x1B[33m";
+
 struct LoggerItem {
     FILE* file; /* 日志文件句柄 */
     int fwrited; /* 已写入文件大小 */
@@ -267,20 +272,23 @@ hlogger_cb(struct skynet_context * context, void *ud, int type, int session, uin
 		/* todos reopen signal */
 		break;
 	case PTYPE_TEXT: /* skynet.error 接口传进来，直接调用info接口 */
-    case PTYPE_LOG_INFO:
     case PTYPE_LOG_DEBUG:        
         printf("[:%08x] (%.3f) %s\n",source, time_nmic, (char *)msg);
         logger_output(inst, INFO, source, time_nmic, msg, sz);	
 		break;
-    case PTYPE_LOG_ERROR:
-        printf("[:%08x] (%.3f) %s\n",source, time_nmic, (char *)msg);
-        /* 错误级别的日志，在error和info接口中都会调用 */
-        logger_output(inst, ERROR, source, time_nmic, msg, sz);
+    case PTYPE_LOG_INFO:
+        printf("%s[:%08x] (%.3f) %s%s\n", kgreen, source, time_nmic, (char *)msg, knrm);
+        logger_output(inst, INFO, source, time_nmic, msg, sz);	
+		break;
+    case PTYPE_LOG_WARN:
+        printf("%s[:%08x] (%.3f) %s%s\n", kyellow, source, time_nmic, (char *)msg, knrm);
+        logger_output(inst, WARN, source, time_nmic, msg, sz);
         logger_output(inst, INFO, source, time_nmic, msg, sz);
         break;
-    case PTYPE_LOG_WARN:
-        printf("[:%08x] (%.3f) %s\n",source, time_nmic, (char *)msg);
-        logger_output(inst, WARN, source, time_nmic, msg, sz);
+    case PTYPE_LOG_ERROR:
+        printf("%s[:%08x] (%.3f) %s%s\n", kred, source, time_nmic, (char *)msg, knrm);
+        /* 错误级别的日志，在error和info接口中都会调用 */
+        logger_output(inst, ERROR, source, time_nmic, msg, sz);
         logger_output(inst, INFO, source, time_nmic, msg, sz);
         break;
 	}
