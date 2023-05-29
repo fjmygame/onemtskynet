@@ -14,6 +14,7 @@
 	}
 --]]
 local skynet = require "skynet"
+---@class cmdCtrl
 local cmdCtrl = BuildOther("cmdCtrl")
 
 local dispatch = CreateBlankTable(cmdCtrl, "dispatch")

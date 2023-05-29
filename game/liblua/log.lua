@@ -21,7 +21,8 @@ log.openModule = {
     clusterext = true, -- 服务间调用
     gate = true, -- 网关
     base = true,
-    player = true
+    player = true,
+    log = true,
 }
 
 -- 保留名字data,模块不要用
@@ -93,14 +94,14 @@ end
 -- 杀进程级别的报错
 function log.Fatal(moduleName, ...)
     local pre = logPrefix("ERROR", moduleName)
-    hloggerlib.error(pre, tconcat({...}), getLogFileLine())
+    hloggerlib.error(pre, tconcat({...}, " "), getLogFileLine())
     skynet.sleep(50)
     skynet.abort()
 end
 
 function log.Error(moduleName, ...)
     local pre = logPrefix("ERROR", moduleName)
-    hloggerlib.error(pre, tconcat({...}), getLogFileLine())
+    hloggerlib.error(pre, tconcat({...}, " "), getLogFileLine())
 end
 
 function log.ErrorFormat(moduleName, fmt, ...)
@@ -120,7 +121,7 @@ function log.Warn(moduleName, ...)
     end
 
     local pre = logPrefix("WARN", moduleName)
-    hloggerlib.warn(pre, tconcat({...}), getLogFileLine())
+    hloggerlib.warn(pre, tconcat({...}, " "), getLogFileLine())
 end
 
 function log.WarnFormat(moduleName, fmt, ...)
@@ -138,7 +139,7 @@ function log.Info(moduleName, ...)
         return
     end
 
-    hloggerlib.info(logPrefix("INFO", moduleName), tconcat({...}), getLogFileLine())
+    hloggerlib.info(logPrefix("INFO", moduleName), tconcat({...}, " "), getLogFileLine())
 end
 
 function log.InfoFormat(moduleName, fmt, ...)
@@ -155,7 +156,7 @@ function log.Debug(moduleName, ...)
         return
     end
 
-    skynet.error(logPrefix("DEBUG", moduleName), tconcat({...}), getLogFileLine())
+    skynet.error(logPrefix("DEBUG", moduleName), tconcat({...}, " "), getLogFileLine())
 end
 
 function log.DebugFormat(moduleName, fmt, ...)
@@ -172,7 +173,7 @@ function log.Dump(moduleName, value, desciption, nesting, ...)
         return
     end
 
-    skynet.error(logPrefix("DEBUG", moduleName), dumpTable(value, desciption, nesting), tconcat({...}), getLogFileLine())
+    skynet.error(logPrefix("DEBUG", moduleName), dumpTable(value, desciption, nesting), tconcat({...}, " "), getLogFileLine())
 end
 
 -- 打印堆栈

@@ -64,7 +64,7 @@ end
 -- 对于字符串的处理
 function redisPersistence.doString(key, info)
     if info.isAll then
-        redisLib.send_delete(gNodeID, key)
+        redisLib.send_delete(gNodeId, key)
     else
         redisPersistence.set(key, info.value)
     end
@@ -78,9 +78,9 @@ function redisPersistence.set(key, value)
         return
     end
     if setRedisExpire then
-        return process_xpcall(redisLib.send_setex, gNodeID, key, redisExpireSec, result)
+        return process_xpcall(redisLib.send_setex, gNodeId, key, redisExpireSec, result)
     else
-        return process_xpcall(redisLib.send_set, gNodeID, key, result)
+        return process_xpcall(redisLib.send_set, gNodeId, key, result)
     end
 end
 
@@ -92,10 +92,10 @@ function redisPersistence.get(key)
         end
         return true, info.value
     end
-    local ok, redis_value = process_xpcall(redisLib.get, gNodeID, key)
+    local ok, redis_value = process_xpcall(redisLib.get, gNodeId, key)
     local result
     if ok and redis_value then
-        processExpire(redisLib, gNodeID, key)
+        processExpire(redisLib, gNodeId, key)
         result = json.decode(redis_value)
     end
     return ok, result
@@ -103,12 +103,12 @@ end
 
 function redisPersistence.getAll(key)
     -- TODOS:没有从缓存取，如果在取之前有更新，就会导致旧数据覆盖新数据！！！
-    local ok, redis_value = process_xpcall(redisLib.hGetAll, gNodeID, key)
+    local ok, redis_value = process_xpcall(redisLib.hGetAll, gNodeId, key)
     if ok and redis_value then
         if not next(redis_value) then
             redis_value = nil
         else
-            processExpire(redisLib, gNodeID, key)
+            processExpire(redisLib, gNodeId, key)
         end
     end
     return ok, redis_value
@@ -175,7 +175,7 @@ end
 
 function redisPersistence.doHash(key, info)
     if info.isAll then -- 全部删除，如果还有kv则为后面加的
-        redisLib.send_delete(gNodeID, key)
+        redisLib.send_delete(gNodeId, key)
     else
         local delFields = info.delFields
         if delFields and next(delFields) then
@@ -194,7 +194,7 @@ function redisPersistence.hMdel(key, fields)
     for k, _ in pairs(fields) do
         table.insert(dvalue, k)
     end
-    local ok, err = process_xpcall(redisLib.send_hMdel, gNodeID, key, dvalue)
+    local ok, err = process_xpcall(redisLib.send_hMdel, gNodeId, key, dvalue)
     return ok, err
 end
 
@@ -209,22 +209,22 @@ function redisPersistence.hMset(key, value)
             log.Error("sys", "redis doHash json_encode error", key, dumpTable(v, "v", 10))
         end
     end
-    local ok = process_xpcall(redisLib.send_hMset, gNodeID, key, rvalue)
+    local ok = process_xpcall(redisLib.send_hMset, gNodeId, key, rvalue)
     -- 更新过期时间
     if setRedisExpire then
-        processExpire(redisLib, gNodeID, key)
+        processExpire(redisLib, gNodeId, key)
     end
     return ok
 end
 
 -- hash不提供
 -- function redisPersistence.hGetAll(key)
---     local ok, redis_value = process_xpcall(redisLib.hGetAll, gNodeID, key)
+--     local ok, redis_value = process_xpcall(redisLib.hGetAll, gNodeId, key)
 --     if ok and redis_value then
 --         if not next(redis_value) then
 --             redis_value = nil
 --         else
---             processExpire(redisLib, gNodeID, key)
+--             processExpire(redisLib, gNodeId, key)
 --         end
 --         return redis_value
 --     end

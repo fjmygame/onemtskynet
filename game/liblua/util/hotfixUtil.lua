@@ -38,7 +38,7 @@ function hotfixUtil.fixAgent(scriptName)
     log.Info("hotfix", "fix 1 fixPlayerAgent begin nodeid", dbconf.curnodeid)
 
     log.Info("hotfix", "********************")
-    local playerAgentPoolSvrAdd = svrAddressMgr.getSvrNew(svrAddressMgr.playerAgentPoolSvr, dbconf.curnodeid)
+    local playerAgentPoolSvrAdd = svrAddressMgr.getSvr(svrAddressMgr.playerAgentPoolSvr, dbconf.curnodeid)
     log.Info("hotfix", "********************1", playerAgentPoolSvrAdd)
     local fileFullPath = "game/hotfix/" .. scriptName .. ".lua"
     hotfixUtil.printFixRet(skynet.call(playerAgentPoolSvrAdd, "lua", "hotFixAgent", fileFullPath))

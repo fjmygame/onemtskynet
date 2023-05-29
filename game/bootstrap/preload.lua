@@ -8,6 +8,8 @@ require "liblua.class"
 require "liblua.instanceclass"
 require "liblua.commonbase"
 require "liblua.debugcmd"
+---@type serverDef
+gServerDef = require "serverDef"
 
 ---@type log
 log = require("liblua.log")

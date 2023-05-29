@@ -300,7 +300,7 @@ hlogger_cb(struct skynet_context * context, void *ud, int type, int session, uin
 int
 hlogger_read_config(HappyLogger * inst) {
     char config_path[SZ_LONG_128] = "./game/bootstrap/hlogger.config";
-    const char * servertype = skynet_getenv("servertype");
+    const char * servertype = skynet_getenv("node_type");
     char patten[SZ_LONG_64];
     char line[SZ_LONG_128];    
     FILE *fp;

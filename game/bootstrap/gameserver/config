@@ -1,5 +1,7 @@
 include "../config"
 
-servertype = "gameserver"
+zone = 0
+node_type = "gameserver"
+node_id = 10001
 
 preload = "./game/bootstrap/gameserver/preload.lua"

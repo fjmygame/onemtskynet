@@ -2,15 +2,18 @@
 proj_luaservices =
     "game/service/?.lua;" ..
     "game/bootstrap/?.lua;" ..
-     ""
+    ""
 -- End
 
 -- 项目使用lua_path定义
-proj_luapaths = "game/?.lua;" ..
+proj_luapaths =
+    "./?.lua;" ..
+    "game/?.lua;" ..
+    "game/service/?.lua;" ..
     "game/liblua/?.lua;" ..
     "game/constdef/?.lua;" ..
-    "game/sharedef/?.lua;"..
-    "./?.lua;"
+    "game/sharedef/?.lua;" ..
+    ""
 -- End
 
 --启动配置
@@ -26,10 +29,23 @@ luaservice = "./skynet/service/?.lua;" .. proj_luaservices
 lualoader = "./game/liblua/lualoader.lua"
 
 --logpath = "../kow_log/lhs"
-
+logdatapath = "./log/data"
 -- cluster = "./game/conf/clusterconf.lua"
 
 start = "start_server"
 preload = "./game/bootstrap/preload.lua"
 
--- daemon = "./skynet.pid"
+-- 游戏大区[1～99]
+zone = 1
+-- 节点类型(详见:gNodeType)
+node_type = "gameserver"
+-- 节点id(即区服id)
+-- 2位大区id + 2位节点类型id + 4位区服id
+node_id = 1010001
+-- 配置中心DB配置
+conf_db_addr = "127.0.0.1:27017" -- 172.17.0.33:27017,172.17.0.8:27017
+-- 副本集名称
+db_replicaset = "cmgo-119prqfh_0"
+db_user = "db_test"
+db_pwd = "lt3600"
+db_name = "game_conf"

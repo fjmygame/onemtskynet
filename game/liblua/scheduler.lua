@@ -74,10 +74,11 @@ function scheduler:pause()
     self.continue = false
 end
 
+local tkeys = table.keys
 -- 刷新
 function scheduler:update()
     local call_map = self.call_map
-    local keys = table.keys(call_map)
+    local keys = tkeys(call_map)
     for _, handle in ipairs(keys) do
         local func = call_map[handle]
         if func then
@@ -118,7 +119,7 @@ end
 function scheduler:ctor(refreshTime)
     schedulerCount = schedulerCount + 1
     if schedulerCount > 10000 then
-        log.Debug("old", "scheduler.create( fun, time )", schedulerCount)
+        log.Debug("sys", "scheduler.create( fun, time )", schedulerCount)
     end
 
     self:setRefreshTime(refreshTime or defaultRefreshTime)

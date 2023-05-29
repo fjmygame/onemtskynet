@@ -5,7 +5,7 @@
 local skynet = require("skynet")
 
 -- local gcStep = 1
-serviceFunctions = {}
+local serviceFunctions = {}
 
 -- 打印异常
 function serviceFunctions.exception(errorMessage)

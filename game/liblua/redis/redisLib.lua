@@ -15,7 +15,7 @@ end
 
 local function getAddr(nodeid, key)
     local index = getSubIndex(key)
-    return svrAddressMgr.getSvrNew(svrAddressMgr.redisSubSvr, nodeid, index)
+    return svrAddressMgr.getSvr(svrAddressMgr.redisSubSvr, nodeid, index)
 end
 
 --[[

@@ -7,80 +7,76 @@
 -- --------------------------------------
 local skynet = require "skynet"
 local cluster
-local cluster_node = skynet.getenv "cluster_node"
-if cluster_node then
+local clusterNodeName = skynet.getenv "cluster_nodename"
+if clusterNodeName then
     cluster = require "cluster"
 end
 
 ---@class clusterExt
 local clusterExt = class("clusterExt")
 
-function clusterExt.initcluster()
-    cluster = require "cluster"
-end
-
 --开启集群节点
-function clusterExt.open(node)
-    skynet.setenv("cluster_node", node)
-    cluster_node = node
-    if cluster_node then
+function clusterExt.open(nodeName)
+    clusterNodeName = nodeName
+    skynet.setenv("cluster_nodename", clusterNodeName)
+    if clusterNodeName then
         cluster = require "cluster"
     end
-    log.Info("clusterext", "cluster_node:", node)
-    cluster.open(cluster_node)
+    log.InfoFormat("clusterext", "cluster %s open", clusterNodeName)
+    cluster.open(clusterNodeName)
 end
 
---请求服务节点名字
+--获取节点名称
 function clusterExt.self()
-    return cluster_node or ""
-end
-
---
-function clusterExt.iscluster()
-    return cluster
+    return clusterNodeName or ""
 end
 
 --获取本节点id
-function clusterExt.getnodeid()
-    return dbconf.curnodeid
+function clusterExt.getNodeId()
+    return skynet.getenv("node_id")
 end
 
 --打包远程节点地址
-function clusterExt.pack_cluster_address(node, name)
-    return {node = node, service = name}
+function clusterExt.pack_cluster_address(nodeName, serviceName)
+    return {nodeName = nodeName, serviceName = serviceName}
 end
 
 --请求远程服务
-function clusterExt.queryservice(node, name)
-    -- local tempname = "." .. name
-    local tempname = name
-    -- local cnode = get_cluster_node()
-    if cluster_node and node and cluster_node ~= node then
-        return clusterExt.pack_cluster_address(node, tempname)
+function clusterExt.queryservice(nodeName, serviceName)
+    if clusterNodeName and nodeName and clusterNodeName ~= nodeName then
+        return clusterExt.pack_cluster_address(nodeName, serviceName)
     else
-        return skynet.localname(tempname)
+        return skynet.localname(serviceName)
     end
 end
 
-local function processCallResult_ok(ok, result, ...)
+local function processCallResult_ok(command, ok, result, ...)
     if not ok then
-        log.Error("sys", "clusterExt.call failed error:", dumpTable(result, "result", 10), ...)
+        log.ErrorFormat(
+            "clusterext",
+            "clusterExt.call failed command %s error:%s",
+            command,
+            dumpTable(result, "result", 10)
+        )
     else
         return result, ...
     end
 end
 
 --远程服务请求
-function clusterExt.call(address, msgtype, ...)
+function clusterExt.call(address, msgtype, command, ...)
     if not address then
-        log.ErrorStack("sys", "err address is nil:", dumpTable({msgtype, ...}, "param", 10))
+        log.ErrorStack("clusterext", "err address is nil:", dumpTable({msgtype, command, ...}, "param", 10))
         return
     end
 
     if type(address) == "table" then
-        return processCallResult_ok(xpcall(cluster.call, debug.traceback, address.node, address.service, ...))
+        return processCallResult_ok(
+            command,
+            xpcall(cluster.call, debug.traceback, address.nodeName, address.serviceName, ...)
+        )
     else
-        return processCallResult_ok(xpcall(skynet.call, debug.traceback, address, msgtype, ...))
+        return processCallResult_ok(command, xpcall(skynet.call, debug.traceback, address, msgtype, ...))
     end
 end
 
@@ -193,14 +189,12 @@ function clusterExt.send(address, msgtype, ...)
         return false
     end
     if type(address) == "table" then
-        -- log.Info("sys", "cluster.send:", address, msgtype, ...)
-        local ok, result = xpcall(cluster.send, debug.traceback, address.node, address.service, ...)
+        local ok, result = xpcall(cluster.send, debug.traceback, address.nodeName, address.serviceName, ...)
         if not ok then
             log.ErrorStack("sys", "clusterExt.send err:", dumpTable(result, "result", 10), ...)
         end
         return ok
     else
-        -- log.Info("sys", "skynet.send:", address, msgtype, ...)
         local ok, result = xpcall(skynet.send, debug.traceback, address, msgtype, ...)
         if not ok then
             log.ErrorStack("sys", "skynet.send err:", dumpTable(result, "result", 10), ...)

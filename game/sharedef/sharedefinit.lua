@@ -1,11 +1,10 @@
 -- --------------------------------------
--- Create Date:2023-03-16 11:28:40
--- Author  : Happy Su
--- Version : 1.0
--- Filename: sharedefinit.lua
--- Introduce  : 类介绍
+-- Create Date : 2023-05-24 05:42:22
+-- Author      : LHS
+-- Version     : 1.0
+-- Filename    : sharedefinit.lua
+-- Introduce   : <<description>>
 -- --------------------------------------
-
 local sharetable = require "skynet.sharetable"
 
 local _M = {}
@@ -35,6 +34,8 @@ function _M.query()
     local all = query_files(filenameList)
     -- todo lhs
     -- gErrDef = all[]
+    ---@type logDef
+    -- gLogDef = query_file("logDef.lua")
 end
 
 setmetatable(

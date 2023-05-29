@@ -4,6 +4,7 @@ local queryCount = 0
 
 local queryRecord = {}
 
+---@class sharedataLib
 local sharedataLib = {}
 
 --增加引用计数

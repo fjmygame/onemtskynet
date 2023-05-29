@@ -14,6 +14,7 @@ ret = {
   err = xxx --错误类型
 }
 ]]
+---@class msgCtrl
 local msgCtrl = {}
 
 local dispatch = {}

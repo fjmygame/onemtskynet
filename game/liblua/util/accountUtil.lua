@@ -8,7 +8,7 @@
 --      个,十,百,千,万位: 5位表示服务器kid
 --      万位:         0-9 大区
 --------------------------------------------------------------------------------
-local svrconf = require("svrconf")
+-- local svrconf = require("svrconf")
 local json = require("json")
 ---@class accountUtil
 local accountUtil = BuildUtil("accountUtil")
@@ -53,7 +53,9 @@ end
 
 -- 获取玩家所在的节点
 function accountUtil.getNodeId(uid)
-    return svrconf.getNodeIDByKingdomID(accountUtil.getKid(uid))
+    -- 2位大区id + 2位节点类型id + 4位区服id
+    local nodeId = uid % 100000000
+    return nodeId
 end
 
 -- uid归类,根据nodeid

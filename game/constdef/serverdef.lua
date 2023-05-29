@@ -1,43 +1,54 @@
-return {
-    gServerType = {
-        loginServer = "loginserver",
-        globalServer = "globalserver",
-        gameServer = "gameserver",
-        chatServer = "chatserver",
-        infoServer = "infoserver",
-        crossServer = "crossserver",
-        webServer = "webserver"
+-- --------------------------------------
+-- Create Date : 2023-05-24 05:40:12
+-- Author      : LHS
+-- Version     : 1.0
+-- Filename    : serverdef.lua
+-- Introduce   : <<description>>
+-- --------------------------------------
+---@class serverDef
+local serverDef = {
+    -- 节点类型
+    gNodeType = {
+        gameserver = "gameserver",
+        loginserver = "loginserver",
+        globalserver = "globalserver",
+        chatserver = "chatserver",
+        infoserver = "infoserver",
+        crossserver = "crossserver",
+        webserver = "webserver"
+    },
+    -- 节点类型id
+    gNodeTypeId = {
+        gameserver = 1,
+        loginserver = 2,
+        globalserver = 3,
+        chatserver = 4,
+        infoserver = 5,
+        crossserver = 6,
+        webserver = 7
+    },
+    -- 节点id -> 节点类型
+    gNodeTypeIdName = {
+        [1] = "gameserver",
+        [2] = "loginserver",
+        [3] = "globalserver",
+        [4] = "chatserver",
+        [5] = "infoserver",
+        [6] = "crossserver",
+        [7] = "webserver"
     },
     -- 服务状态
     gServerStatus = {
         NORMAL = 1, -- 正常
         MAINTENANCE = 2, -- 维护
-        NEWSERVER = 3 --新服
-    },
-    -- 全服状态
-    gGlobalServerStatus = {
-        NORMAL = 1, -- 正常
-        MAINTENANCE = 2, -- 维护
-        WHITEIP = 3 -- 白名单
+        WHITEIP = 3, -- 白名单
+        NEWSERVER = 4 --新服
     },
     gServerTag = {
-        FREE = 1,
-        --通畅
-        BUSY = 2
-        --繁忙
+        FREE = 1, --通畅
+        BUSY = 2 --繁忙
     },
-    -- 服务类型
-    ServiceType = {
-        red = 1, -- 红点系统
-        playerModule = 2, -- 玩家模块
-        marriage = 3, -- 联姻
-        meal = 4, -- 膳食活动[狩猎/海盗]
-        rank = 5, -- 排行榜
-        stats = 6, -- 统计
-        mail = 7, -- 邮件
-        activity = 8 -- 活动
-    },
-    -- 踢人标示
+    -- 踢人标识
     TickCode = {
         tick = 101, -- 踢人
         maintenance = 102, -- 服务器维护
@@ -46,3 +57,5 @@ return {
         sessionerr = 105 -- session异常
     }
 }
+
+return serverDef

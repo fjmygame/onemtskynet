@@ -21,7 +21,7 @@ end
 
 function _M:query()
     local sql = string.safeFormat("SELECT * FROM %s;", _M.getTableName())
-    return clusterExt.call(svrAddressMgr.getSvrNew(svrAddressMgr.confDBSvr), "lua", "execute", sql)
+    return clusterExt.call(svrAddressMgr.getSvr(svrAddressMgr.confDBSvr), "lua", "execute", sql)
 end
 
 function _M:getUpdateSql(conf)
@@ -39,13 +39,13 @@ end
 -- 更新分组数据
 function _M:update(conf)
     local sql = self:getUpdateSql(conf)
-    clusterExt.send(svrAddressMgr.getSvrNew(svrAddressMgr.confDBSvr), "lua", "execute", sql)
+    clusterExt.send(svrAddressMgr.getSvr(svrAddressMgr.confDBSvr), "lua", "execute", sql)
 end
 
 -- 同步更新数据
 function _M:syn_update(conf)
     local sql = self:getUpdateSql(conf)
-    clusterExt.call(svrAddressMgr.getSvrNew(svrAddressMgr.confDBSvr), "lua", "execute", sql)
+    clusterExt.call(svrAddressMgr.getSvr(svrAddressMgr.confDBSvr), "lua", "execute", sql)
 end
 
 -- 初始化检查
@@ -261,7 +261,7 @@ end
 -- 合服检查【同组才能合】--业务放到功能服去做
 function _M:checkComineServer(kids)
     local globalNodeId = confAPI.getGlobalNodeId()
-    local crossRankAddr = svrAddressMgr.getSvrNew(svrAddressMgr.crossRankSvr, globalNodeId)
+    local crossRankAddr = svrAddressMgr.getSvr(svrAddressMgr.crossRankSvr, globalNodeId)
     -- 1、跨服冲榜分组
     local bok = clusterExt.call(crossRankAddr, "lua", "checkComineServer", kids)
     if not bok then
@@ -270,7 +270,7 @@ function _M:checkComineServer(kids)
 
     log.Info("gm", "checkComineServer check crossRank complete")
     -- 2、跨服聊天分组
-    local crossChatRoomAddr = svrAddressMgr.getSvrNew(svrAddressMgr.crossChatRoomSvr, globalNodeId)
+    local crossChatRoomAddr = svrAddressMgr.getSvr(svrAddressMgr.crossChatRoomSvr, globalNodeId)
     bok = clusterExt.call(crossChatRoomAddr, "lua", "checkComineServer", kids)
     if not bok then
         return false, string.safeFormat("checkComineServer fail. kids:%s is not in same Chat group!", json.encode(kids))
@@ -282,7 +282,7 @@ function _M:checkComineServer(kids)
     local nodeids = confAPI.getCrossNodeIds()
     local nodeid = nodeids[randomUtil.random(1, #nodeids)]
     local slaveid = randomUtil.random(1, snum)
-    local address = svrAddressMgr.getSvrNew(svrAddressMgr.crossDragonNestSvr, nodeid, slaveid)
+    local address = svrAddressMgr.getSvr(svrAddressMgr.crossDragonNestSvr, nodeid, slaveid)
     bok = clusterExt.call(address, "lua", "checkComineServer", kids)
     if not bok then
         return false, string.safeFormat(
