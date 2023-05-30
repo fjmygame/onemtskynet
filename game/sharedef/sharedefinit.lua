@@ -8,34 +8,28 @@
 local sharetable = require "skynet.sharetable"
 
 local _M = {}
+
 local cur_path = "./game/sharedef/"
-
-local function load_file(filename)
-    sharetable.loadfile(string.safeFormat("%s%s", cur_path, filename))
-end
-
-local function query_file(filename)
-    return sharetable.query(string.safeFormat("%s%s", cur_path, filename))
-end
-
-local function query_files(filenameList)
-    return sharetable.queryall(filenameList)
-end
+local shareDefFileNameList = {
+    cur_path .. "errDef.lua",
+    cur_path .. "eventNameDef.lua",
+    cur_path .. "logDef.lua"
+}
 
 function _M.load()
-    load_file("errDef.lua")
+    for _, filename in ipairs(shareDefFileNameList) do
+        sharetable.loadfile(filename)
+    end
 end
 
 function _M.query()
+    local queryResult = sharetable.queryall(shareDefFileNameList)
     ---@type gErrDef
-    local filenameList = {
-        "errDef.lua"
-    }
-    local all = query_files(filenameList)
-    -- todo lhs
-    -- gErrDef = all[]
+    gErrDef = queryResult[cur_path .. "errDef.lua"]
     ---@type logDef
-    -- gLogDef = query_file("logDef.lua")
+    gLogDef = queryResult[cur_path .. "logDef.lua"]
+    ---@type eventNameDef
+    gEventName = queryResult[cur_path .. "eventNameDef.lua"]
 end
 
 setmetatable(
