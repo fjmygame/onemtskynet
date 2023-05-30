@@ -2,7 +2,7 @@ local skynet = require "skynet"
 
 local clusterExt = require "clusterExt"
 local svrAddressMgr = require "svrAddressMgr"
-local sharedefinit = require "sharedef.sharedefinit"
+local shareDefInit = require "sharedef.shareDefInit"
 
 local gNodeType = gServerDef.gNodeType
 
@@ -21,7 +21,7 @@ skynet.start(
         -- 启动日志服务
         -- skynet.newservice("serverLogService")
         -- 初始化sharetable，需要放最前面
-        sharedefinit.load()
+        shareDefInit.load()
         timeUtil = require "util.timeUtil"
 
         --启动debug服务

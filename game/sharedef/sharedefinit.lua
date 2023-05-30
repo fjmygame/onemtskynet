@@ -2,7 +2,7 @@
 -- Create Date : 2023-05-24 05:42:22
 -- Author      : LHS
 -- Version     : 1.0
--- Filename    : sharedefinit.lua
+-- Filename    : shareDefInit.lua
 -- Introduce   : <<description>>
 -- --------------------------------------
 local sharetable = require "skynet.sharetable"
