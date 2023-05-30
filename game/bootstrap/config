@@ -43,9 +43,4 @@ node_type = "gameserver"
 -- 2位大区id + 2位节点类型id + 4位区服id
 node_id = 1010001
 -- 配置中心DB配置
-conf_db_addr = "127.0.0.1:27017" -- 172.17.0.33:27017,172.17.0.8:27017
--- 副本集名称
-db_replicaset = "cmgo-119prqfh_0"
-db_user = "db_test"
-db_pwd = "lt3600"
-db_name = "game_conf"
+conf_db_addr = "mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin" -- mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin&replicaSet=cmgo-119prqfh_0"
