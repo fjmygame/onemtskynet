@@ -14,6 +14,7 @@ local cmdCtrl = require "cmdCtrl"
 local svrAddressMgr = require "svrAddressMgr"
 local dataLogMgr = require "dataCenterLog.dataLogMgr"
 
+gZone = tonumber(skynet.getenv("zone"))
 gNodeId = tonumber(...)
 assert(gNodeId)
 

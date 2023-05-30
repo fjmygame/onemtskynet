@@ -44,11 +44,10 @@ function _M:getDirName(synType)
         return dirMap[synType]
     end
 
-    local nodeid = dbconf.curnodeid
     local dirName
-    dirName = skynet.getenv "logdatapath" or "./kow_data_log"
+    dirName = skynet.getenv "logdatapath" or "/data/kow_data_log"
 
-    dirName = dirName .. "/" .. synType .. "/node_" .. tostring(nodeid) .. "/"
+    dirName = dirName .. "/" .. synType .. "/node_" .. gNodeId .. "/"
 
     dirMap[synType] = dirName
 
@@ -89,9 +88,7 @@ function _M:getSynType(ptype)
 end
 
 function _M:getUniqueId(pre, curTime, data)
-    local zoneid = dbconf.zone
-    local nodeid = dbconf.curnodeid
-    return pre .. "_" .. zoneid .. "_" .. nodeid .. "_" .. curTime .. "_" .. data.aiid
+    return pre .. "_" .. gZone .. "_" .. gNodeId .. "_" .. curTime .. "_" .. data.aiid
 end
 
 function _M:queryFile(synType, fileName)

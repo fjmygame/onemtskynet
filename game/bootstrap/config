@@ -28,8 +28,8 @@ lua_cpath = "./skynet/luaclib/?.so;" .. "game/lib/?.so;" .. "./?.so"
 luaservice = "./skynet/service/?.lua;" .. proj_luaservices
 lualoader = "./game/liblua/lualoader.lua"
 
---logpath = "../kow_log/lhs"
-logdatapath = "./log/data"
+--logpath = "./log"
+logdatapath = "./log"
 -- cluster = "./game/conf/clusterconf.lua"
 
 start = "start_server"

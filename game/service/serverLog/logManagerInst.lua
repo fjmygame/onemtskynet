@@ -11,7 +11,7 @@ local queue = require "skynet.queue"
 ---@class logManagerInst
 local LogManager = instanceClass("logManagerInst")
 ---@type dataLogInst
-local dataLogInst = require("service.serverLog.dataLogInst")
+local dataLogInst = require("dataCenterLog.dataLogInst")
 
 function LogManager:ctor()
     self.ddQueue = queue()

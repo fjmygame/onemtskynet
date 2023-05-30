@@ -15,7 +15,7 @@ local accountUtil = require("util.accountUtil")
 -- local batchDataAPI = require "batchDataAPI"
 local delayTimer = require("delayTimer")
 ---@type dataLogInst
-local dataLogInst = require("serverLog.dataLogInst")
+local dataLogInst = require("dataCenterLog.dataLogInst")
 ---@class dataLogMgr
 local _M = class("dataLogMgr")
 
