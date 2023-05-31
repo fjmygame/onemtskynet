@@ -43,4 +43,15 @@ node_type = "gameserver"
 -- 2位大区id + 2位节点类型id + 4位区服id
 node_id = 1010001
 -- 配置中心DB配置
-conf_db_addr = "mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin" -- mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin&replicaSet=cmgo-119prqfh_0"
+-- mongo驱动不支持uri配置方式
+-- conf_db_addr = "mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin" -- mongodb://db_user:123456@127.0.0.1:27017/game_conf?authSource=admin&replicaSet=cmgo-119prqfh_0"
+conf_db_addr = [[conf_db_addr = {
+    host = "127.0.0.1",
+    port = 27017,
+    username = "db_user",
+    password = "123456",
+    authdb = "admin"
+    }
+    return conf_db_addr
+    ]]
+

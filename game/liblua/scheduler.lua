@@ -98,14 +98,8 @@ end
 ----------------------------------------
 
 local function coFun(self)
-    local times = 0
     while self.open do
         if self.continue then
-            times = times + 1
-            if times == 60 then
-                -- log.Info("sys", "scheduler update")
-                times = 0
-            end
             local startTime = skynet.now()
             self:update()
             local remainTime = self:getRefreshTime() * 100 - (skynet.now() - startTime)

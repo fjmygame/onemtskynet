@@ -12,6 +12,8 @@ local skynet = require "skynet"
 require "skynet.manager"
 local logManagerInst = require("service.serverLog.logManagerInst")
 
+gNodeId = tonumber(skynet.getenv("node_id"))
+
 skynet.start(
     function()
         print("server log service addr:", skynet.self())

@@ -23,6 +23,7 @@ log.openModule = {
     base = true,
     player = true,
     log = true,
+    mongo = true
 }
 
 -- 保留名字data,模块不要用
@@ -43,6 +44,9 @@ log.level = LEVEL_DEBUG
 
 local function logPrefix(lv, moduleName, other)
     local str = ""
+    if gNodeId then
+        str = str .. "n(" .. gNodeId .. ") "
+    end
     if moduleName then
         str = str .. "m(" .. moduleName .. ")"
     end
@@ -173,7 +177,12 @@ function log.Dump(moduleName, value, desciption, nesting, ...)
         return
     end
 
-    skynet.error(logPrefix("DEBUG", moduleName), dumpTable(value, desciption, nesting), tconcat({...}, " "), getLogFileLine())
+    skynet.error(
+        logPrefix("DEBUG", moduleName),
+        dumpTable(value, desciption, nesting),
+        tconcat({...}, " "),
+        getLogFileLine()
+    )
 end
 
 -- 打印堆栈
