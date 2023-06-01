@@ -41,6 +41,7 @@ skynet.start(
         -- 启动配置DB服务
         mongoAPI:launchGameConfDbService()
         mongoAPI:startGameConfDbService(dbconf)
+        mongoAPI:runTest()
 
         -- mongoAPI:launchNodeDbService(2)
         -- mongoAPI:startNodeDbService(dbconf)

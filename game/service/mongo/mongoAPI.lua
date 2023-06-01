@@ -43,7 +43,6 @@ function _M:startGameConfDbService(conf)
     end
     self.isGameConfDbServiceStart = true
 
-    conf["dbname"] = conf["dbname"] or "gameconf"
     local bok = skynet.call(gameConfDbSvr, "lua", "start", conf)
     if not bok then
         assert(bok, "startGameConfDbService fail!")
@@ -73,8 +72,6 @@ function _M:startNodeDbService(conf)
     end
     self.isNodeDbServiceStart = true
 
-    conf["dbname"] = conf["dbname"] or nodeName
-
     local serviceNum = self.nodeDbServiceNum
     for i = 1, serviceNum, 1 do
         local addr = string.format(nodeDbSvr, nodeId, i)
@@ -86,6 +83,11 @@ function _M:startNodeDbService(conf)
     end
 
     return true
+end
+
+function _M:runTest()
+    skynet.send(gameConfDbSvr, "lua", "runTest", "gameconf", "conf_node")
+    skynet.call(gameConfDbSvr, "lua", "runTest", "gameconf", "conf_cluster")
 end
 
 return _M
