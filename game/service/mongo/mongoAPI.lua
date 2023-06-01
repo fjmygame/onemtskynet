@@ -87,7 +87,7 @@ end
 
 function _M:runTest()
     skynet.send(gameConfDbSvr, "lua", "runTest", "gameconf", "conf_node")
-    skynet.call(gameConfDbSvr, "lua", "runTest", "gameconf", "conf_cluster")
+    -- skynet.call(gameConfDbSvr, "lua", "runTest", "gameconf", "conf_cluster")
 end
 
 return _M
